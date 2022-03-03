@@ -66,6 +66,8 @@ def main():
                         attachment = service.users().messages().attachments().get(userId='me', messageId=message['id'], id=part['body']['attachmentId']).execute()
                         yield {"filename": part["filename"], "data": attachment['data']}
 
+        print(f"Searching for messages with subject: '{subject_to_detect}' and extracting excel attachments")
+
         if not messages:
             print('No messages found.')
             return
