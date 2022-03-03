@@ -13,7 +13,7 @@ SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
 def main():
     """Directory to save the extracted files
     """
-    store_dir = '~/Desktop/downloaded_attachments'
+    store_dir = '~/Desktop/downloaded_attachments/'
     """Load credentials
     """
     creds = None
@@ -68,8 +68,11 @@ def main():
             attachments = list(getAttachments(message))
             if subject is None:
                 continue
-            if attachments['filename'].endswith('.xlsx'):
-                pass
+            for attachment in attachments:
+                if attachment['filename'].endswith('.xlsx'):
+                    print(f"Found attachment: {attachment['filename']}")
+                    with open(os.path.join(store_dir, attachment['filename']), 'wb') as f:
+                        f.write(attachment['data'])
             print(f"{'-'*20}") 
 
         
