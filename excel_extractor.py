@@ -15,6 +15,12 @@ def main():
     """Directory to save the extracted files
     """
     store_dir = 'downloaded_attachments/'
+
+    """
+    Subject to detect
+    """
+    subject_to_detect = 'email reto'
+
     """Load credentials
     """
     creds = None
@@ -66,17 +72,20 @@ def main():
 
         for message in messages:
             subject = getSubject(message)
-            attachments = list(getAttachments(message))
-            if subject is None:
-                continue
-            for attachment in attachments:
-                if attachment['filename'].endswith('.xlsx'):
-                    print(f"Found attachment: {attachment['filename']}")
-                    path = os.path.join(store_dir, attachment['filename'])
-                    print(attachment['data'])
-                    with open(path, 'wb') as f:
-                        f.write(base64.urlsafe_b64decode(attachment['data']))
-            print(f"{'-'*20}") 
+            if subject.lower() == subject_to_detect.lower():
+                print(f"Subject: {subject} found!")
+                attachments = list(getAttachments(message))
+                if not attachments:
+                    print('No attachments found.')
+                for attachment in attachments:
+                    if attachment['filename'].endswith('.xlsx'):
+                        print(f"Found attachment: {attachment['filename']}")
+                        path = os.path.join(store_dir, attachment['filename'])
+                        with open(path, 'wb') as f:
+                            f.write(base64.urlsafe_b64decode(attachment['data']))
+                    else:
+                        print(f"Skipping attachment: {attachment['filename']}")
+                print(f"{'-'*20}")
 
         
     except HttpError as error:
