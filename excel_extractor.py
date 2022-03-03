@@ -1,4 +1,5 @@
 import os.path
+import base64
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -13,7 +14,7 @@ SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
 def main():
     """Directory to save the extracted files
     """
-    store_dir = '~/Desktop/downloaded_attachments/'
+    store_dir = 'downloaded_attachments/'
     """Load credentials
     """
     creds = None
@@ -71,8 +72,10 @@ def main():
             for attachment in attachments:
                 if attachment['filename'].endswith('.xlsx'):
                     print(f"Found attachment: {attachment['filename']}")
-                    with open(os.path.join(store_dir, attachment['filename']), 'wb') as f:
-                        f.write(attachment['data'])
+                    path = os.path.join(store_dir, attachment['filename'])
+                    print(attachment['data'])
+                    with open(path, 'wb') as f:
+                        f.write(base64.urlsafe_b64decode(attachment['data']))
             print(f"{'-'*20}") 
 
         
