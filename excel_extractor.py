@@ -51,10 +51,12 @@ def main():
             print('No messages found.')
             return
 
-        mailPruebaID = messages[1]['id']
-        print("Ultimo mail:")
-        mailPrueba = service.users().messages().get(userId='me', id=mailPruebaID).execute()
-        print(getSubject(mailPrueba))  
+        for message in messages:
+            subject = getSubject(message)
+            if subject is None:
+                continue
+            print(f"ID: {message['id']}, Subject: {subject}")
+            print(f"{'-'*20}") 
 
     except HttpError as error:
         print(f'An error occurred: {error}')
