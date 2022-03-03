@@ -1,4 +1,4 @@
-import os.path
+import os
 import base64
 
 from google.auth.transport.requests import Request
@@ -81,6 +81,7 @@ def main():
                     if attachment['filename'].endswith('.xlsx'):
                         print(f"Found attachment: {attachment['filename']}")
                         path = os.path.join(store_dir, attachment['filename'])
+                        os.mkdir(store_dir) if not os.path.exists(store_dir) else None
                         with open(path, 'wb') as f:
                             f.write(base64.urlsafe_b64decode(attachment['data']))
                     else:
