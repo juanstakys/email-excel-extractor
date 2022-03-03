@@ -11,6 +11,9 @@ SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
 
 
 def main():
+    """Directory to save the extracted files
+    """
+    store_dir = '~/Desktop/downloaded_attachments'
     """Load credentials
     """
     creds = None
@@ -46,6 +49,15 @@ def main():
                     return header['value']
             return None
 
+        def getAttachments(message):
+            """Get the attachments of the message
+            """
+            messageData = service.users().messages().get(userId='me', id=message['id']).execute()
+            if('parts' in messageData['payload'].keys()):
+                for part in messageData['payload']['parts']:
+                    if part['filename']:        
+                        attachment = service.users().messages().attachments().get(userId='me', messageId=message['id'], id=part['body']['attachmentId']).execute()
+                        yield {"filename": part["filename"], "data": attachment['data']}
 
         if not messages:
             print('No messages found.')
@@ -53,11 +65,14 @@ def main():
 
         for message in messages:
             subject = getSubject(message)
+            attachments = list(getAttachments(message))
             if subject is None:
                 continue
-            print(f"ID: {message['id']}, Subject: {subject}")
+            if attachments['filename'].endswith('.xlsx'):
+                pass
             print(f"{'-'*20}") 
 
+        
     except HttpError as error:
         print(f'An error occurred: {error}')
 
