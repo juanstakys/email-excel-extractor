@@ -12,18 +12,16 @@ SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
 
 
 def main():
-    """Directory to save the extracted files
-    """
+
+    # Directory to save the extracted files
     store_dir = 'downloaded_attachments/'
 
-    """
-    Subject to detect
-    """
+    # Subject to detect
     subject_to_detect = 'email reto'
 
-    """Load credentials
-    """
+    # Load credentials
     creds = None
+
     # The file token.json stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
     # time.
@@ -40,7 +38,7 @@ def main():
         # Save the credentials for the next run
         with open('token.json', 'w') as token:
             token.write(creds.to_json())
-    
+
     try:
         # Call the Gmail API
         service = build('gmail', 'v1', credentials=creds)
@@ -48,25 +46,27 @@ def main():
         messages = results.get('messages', [])
 
         def getSubject(message):
-            """Get the subject of the message
-            """
-            headers = service.users().messages().get(userId='me', id=message['id']).execute()['payload']['headers']
+            # Get the subject of the message
+            headers = service.users().messages().get(
+                userId='me', id=message['id']).execute()['payload']['headers']
             for header in headers:
                 if header['name'] == 'Subject':
                     return header['value']
             return None
 
         def getAttachments(message):
-            """Get the attachments of the message
-            """
-            messageData = service.users().messages().get(userId='me', id=message['id']).execute()
+            # Get the attachments of the message
+            messageData = service.users().messages().get(
+                userId='me', id=message['id']).execute()
             if('parts' in messageData['payload'].keys()):
                 for part in messageData['payload']['parts']:
-                    if part['filename']:        
-                        attachment = service.users().messages().attachments().get(userId='me', messageId=message['id'], id=part['body']['attachmentId']).execute()
+                    if part['filename']:
+                        attachment = service.users().messages().attachments().get(
+                            userId='me', messageId=message['id'], id=part['body']['attachmentId']).execute()
                         yield {"filename": part["filename"], "data": attachment['data']}
 
-        print(f"Searching for messages with subject: '{subject_to_detect}' and extracting excel attachments")
+        print(
+            f"Searching for messages with subject: '{subject_to_detect}' and extracting excel attachments")
 
         if not messages:
             print('No messages found.')
@@ -83,16 +83,18 @@ def main():
                     if attachment['filename'].endswith('.xlsx'):
                         print(f"Found attachment: {attachment['filename']}")
                         path = os.path.join(store_dir, attachment['filename'])
-                        os.mkdir(store_dir) if not os.path.exists(store_dir) else None
+                        os.mkdir(store_dir) if not os.path.exists(
+                            store_dir) else None
                         with open(path, 'wb') as f:
-                            f.write(base64.urlsafe_b64decode(attachment['data']))
+                            f.write(base64.urlsafe_b64decode(
+                                attachment['data']))
                     else:
                         print(f"Skipping attachment: {attachment['filename']}")
                 print(f"{'-'*20}")
 
-        
     except HttpError as error:
         print(f'An error occurred: {error}')
+
 
 if __name__ == '__main__':
     main()
