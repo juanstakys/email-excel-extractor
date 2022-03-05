@@ -44,7 +44,6 @@ def main():
     # Cargar credenciales
     creds = loadCredentials()
 
-    
     try:
         # Llama a la API de Gmail.
         service = build('gmail', 'v1', credentials=creds)
