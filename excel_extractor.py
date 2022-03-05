@@ -7,27 +7,25 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
-# If modifying these scopes, delete the file token.json.
+# Alcance que tiene la app sobre la cuenta de Gmail. Si se modifica, eliminar token.json.
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
 
 
 def main():
 
-    # Directory to save the extracted files
     store_dir = 'downloaded_attachments/'
 
-    # Subject to detect
     subject_to_detect = 'email reto'
 
-    # Load credentials
+    # Cargar credenciales
     creds = None
 
-    # The file token.json stores the user's access and refresh tokens, and is
-    # created automatically when the authorization flow completes for the first
-    # time.
+    # El archivo token.json guarda el acceso del usuario y se refresca para no tener que pasar
+    # por el proceso de autorización al ejecutar nuevamente el programa. El archivo se crea
+    # automáticamente cuando el flujo de autorización completa por primera vez.
     if os.path.exists('token.json'):
         creds = Credentials.from_authorized_user_file('token.json', SCOPES)
-    # If there are no (valid) credentials available, let the user log in.
+    # Si no hay credenciales o no hay credenciales válidas, pide al usuario que inicie sesión.
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
@@ -35,18 +33,18 @@ def main():
             flow = InstalledAppFlow.from_client_secrets_file(
                 'credentials.json', SCOPES)
             creds = flow.run_local_server(port=0)
-        # Save the credentials for the next run
+        # Guarda las credenciales en el archivo token.json para la siguiente ejecución.
         with open('token.json', 'w') as token:
             token.write(creds.to_json())
 
     try:
-        # Call the Gmail API
+        # Llama a la API de Gmail.
         service = build('gmail', 'v1', credentials=creds)
         results = service.users().messages().list(userId='me').execute()
         messages = results.get('messages', [])
 
         def getSubject(message):
-            # Get the subject of the message
+            # Devuelve el asunto del mensaje.
             headers = service.users().messages().get(
                 userId='me', id=message['id']).execute()['payload']['headers']
             for header in headers:
@@ -55,7 +53,7 @@ def main():
             return None
 
         def getAttachments(message):
-            # Get the attachments of the message
+            # Devuelve los adjuntos del mensaje como generator iterator.
             messageData = service.users().messages().get(
                 userId='me', id=message['id']).execute()
             if('parts' in messageData['payload'].keys()):
