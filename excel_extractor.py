@@ -11,13 +11,9 @@ from googleapiclient.errors import HttpError
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
 
 
-def main():
+# Cargar credenciales
+def loadCredentials():
 
-    store_dir = 'downloaded_attachments/'
-
-    subject_to_detect = 'email reto'
-
-    # Cargar credenciales
     creds = None
 
     # El archivo token.json guarda el acceso del usuario y se refresca para no tener que pasar
@@ -37,6 +33,18 @@ def main():
         with open('token.json', 'w') as token:
             token.write(creds.to_json())
 
+    return creds
+
+
+def main():
+
+    store_dir = 'downloaded_attachments/'
+    subject_to_detect = 'email reto'
+
+    # Cargar credenciales
+    creds = loadCredentials()
+
+    
     try:
         # Llama a la API de Gmail.
         service = build('gmail', 'v1', credentials=creds)
