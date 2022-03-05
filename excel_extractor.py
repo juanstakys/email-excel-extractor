@@ -50,8 +50,8 @@ def main():
         results = service.users().messages().list(userId='me').execute()
         messages = results.get('messages', [])
 
+        # Devuelve el asunto del mensaje.
         def getSubject(message):
-            # Devuelve el asunto del mensaje.
             headers = service.users().messages().get(
                 userId='me', id=message['id']).execute()['payload']['headers']
             for header in headers:
@@ -59,8 +59,8 @@ def main():
                     return header['value']
             return None
 
+        # Devuelve los adjuntos del mensaje como generator iterator.
         def getAttachments(message):
-            # Devuelve los adjuntos del mensaje como generator iterator.
             messageData = service.users().messages().get(
                 userId='me', id=message['id']).execute()
             if('parts' in messageData['payload'].keys()):
@@ -92,7 +92,7 @@ def main():
                             store_dir) else None
                         with open(path, 'wb') as f:
                             f.write(base64.urlsafe_b64decode(
-                                attachment['data']))
+                                attachment['data']))  # La data del adjunto se descarga en formato base64url, por lo que hay que decodificarla.
                     else:
                         print(f"Skipping attachment: {attachment['filename']}")
                 print(f"{'-'*20}")
