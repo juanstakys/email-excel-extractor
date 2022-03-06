@@ -26,9 +26,16 @@ def loadCredentials():
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
+            # Crea una instancia del flujo de autorización con las credenciales y alcances definidos.
             flow = InstalledAppFlow.from_client_secrets_file(
-                'credentials.json', SCOPES)
+                'user_secret.json', SCOPES)
+            # Ejecuta el flujo de autorización en el servidor local.
             creds = flow.run_local_server(port=0)
+            """ ↑↑↑ Este método corre un servidor local que se queda a la espera de un código de autorización de Google, 
+            que se obtiene tras iniciar sesión en una ventana del navegador. El servidor luego se detiene y el código
+            de autorización se intercambia por un token de acceso.
+            La función retorna las credenciales de OAuth 2.0 para el usuario."""
+
         # Guarda las credenciales en el archivo token.json para la siguiente ejecución.
         with open('token.json', 'w') as token:
             token.write(creds.to_json())
