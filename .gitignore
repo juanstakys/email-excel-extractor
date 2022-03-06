@@ -1,4 +1,4 @@
 venv
 downloaded_attachments
-credentials.json
+user_secret.json
 token.json
