@@ -16,9 +16,9 @@ def loadCredentials():
 
     creds = None
 
-    # El archivo token.json guarda el acceso del usuario y se refresca para no tener que pasar
-    # por el proceso de autorización al ejecutar nuevamente el programa. El archivo se crea
-    # automáticamente cuando el flujo de autorización completa por primera vez.
+    """El archivo token.json guarda el acceso del usuario y se refresca para no tener que pasar
+    por el proceso de autorización al ejecutar nuevamente el programa. El archivo se crea
+    automáticamente cuando el flujo de autorización completa por primera vez."""
     if os.path.exists('token.json'):
         creds = Credentials.from_authorized_user_file('token.json', SCOPES)
     # Si no hay credenciales o no hay credenciales válidas, pide al usuario que inicie sesión.
@@ -34,7 +34,7 @@ def loadCredentials():
             """ ↑↑↑ Este método corre un servidor local que se queda a la espera de un código de autorización de Google, 
             que se obtiene tras iniciar sesión en una ventana del navegador. El servidor luego se detiene y el código
             de autorización se intercambia por un token de acceso.
-            La función retorna las credenciales de OAuth 2.0 para el usuario."""
+            La función retorna las credenciales de OAuth 2.0 para el usuario (objeto de tipo Credentials del módulo google.oauth2.credentials)"""
 
         # Guarda las credenciales en el archivo token.json para la siguiente ejecución.
         with open('token.json', 'w') as token:
@@ -85,7 +85,7 @@ def main():
         if not messages:
             print('No messages found.')
             return
-        
+
         # Crea el directorio para guardar los adjuntos si no existe.
         os.mkdir(store_dir) if not os.path.exists(
             store_dir) else None
