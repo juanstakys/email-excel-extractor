@@ -48,6 +48,7 @@ def main():
         # Llama a la API de Gmail.
         service = build('gmail', 'v1', credentials=creds)
         results = service.users().messages().list(userId='me').execute()
+        # Obtiene los mensajes de la cuenta de Gmail y los guarda en una lista.
         messages = results.get('messages', [])
 
         # Devuelve el asunto del mensaje.
@@ -72,11 +73,13 @@ def main():
 
         print(
             f"Searching for messages with subject: '{subject_to_detect}' and extracting excel attachments")
+        print(f"{'-'*20}")
 
         if not messages:
             print('No messages found.')
             return
 
+        # Itera sobre los mensajes, checkea si el asunto es el que se busca y si tiene adjuntos.
         for message in messages:
             subject = getSubject(message)
             if subject.lower() == subject_to_detect.lower():
@@ -84,6 +87,8 @@ def main():
                 attachments = list(getAttachments(message))
                 if not attachments:
                     print('No attachments found.')
+                    continue
+                # Itera sobre los adjuntos y los guarda en el directorio indicado si tienen extensión xlsx.
                 for attachment in attachments:
                     if attachment['filename'].endswith('.xlsx'):
                         print(f"Found attachment: {attachment['filename']}")
