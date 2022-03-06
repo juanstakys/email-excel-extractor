@@ -78,6 +78,10 @@ def main():
         if not messages:
             print('No messages found.')
             return
+        
+        # Crea el directorio para guardar los adjuntos si no existe.
+        os.mkdir(store_dir) if not os.path.exists(
+            store_dir) else None
 
         # Itera sobre los mensajes, checkea si el asunto es el que se busca y si tiene adjuntos.
         for message in messages:
@@ -93,8 +97,6 @@ def main():
                     if attachment['filename'].endswith('.xlsx'):
                         print(f"Found attachment: {attachment['filename']}")
                         path = os.path.join(store_dir, attachment['filename'])
-                        os.mkdir(store_dir) if not os.path.exists(
-                            store_dir) else None
                         with open(path, 'wb') as f:
                             f.write(base64.urlsafe_b64decode(
                                 attachment['data']))  # La data del adjunto se descarga en formato base64url, por lo que hay que decodificarla.
