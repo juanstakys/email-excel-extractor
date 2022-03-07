@@ -102,13 +102,15 @@ def main():
                 # Itera sobre los adjuntos y los guarda en el directorio indicado si son de tipo excel.
                 for attachment in attachments:
                     if attachment['mimeType'] == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
-                        print(f"Found attachment: name: {attachment['filename']}, mimeType: {attachment['mimeType']}")
+                        print(
+                            f"Found attachment: name: {attachment['filename']}, mimeType: {attachment['mimeType']}")
                         path = os.path.join(store_dir, attachment['filename'])
                         with open(path, 'wb') as f:
                             f.write(base64.urlsafe_b64decode(
                                 attachment['data']))  # La data del adjunto se descarga en formato base64url, por lo que hay que decodificarla.
                     else:
-                        print(f"Skipping attachment: {attachment['filename']} of type: {attachment['mimeType']}")
+                        print(
+                            f"Skipping attachment: {attachment['filename']} of type: {attachment['mimeType']}")
                 print(f"{'-'*20}")
 
     except HttpError as error:
