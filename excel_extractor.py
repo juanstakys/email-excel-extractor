@@ -18,7 +18,7 @@ def loadCredentials():
 
     """El archivo token.json guarda el acceso del usuario y se refresca para no tener que pasar
     por el proceso de autorización al ejecutar nuevamente el programa. El archivo se crea
-    automáticamente cuando el flujo de autorización completa por primera vez."""
+    automáticamente cuando el flujo de autorización se completa por primera vez."""
     if os.path.exists('token.json'):
         creds = Credentials.from_authorized_user_file('token.json', SCOPES)
     # Si no hay credenciales o no hay credenciales válidas, pide al usuario que inicie sesión.
