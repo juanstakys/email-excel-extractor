@@ -76,7 +76,7 @@ def main():
                     if part['filename']:
                         attachment = service.users().messages().attachments().get(
                             userId='me', messageId=message['id'], id=part['body']['attachmentId']).execute()
-                        yield {"filename": part["filename"], "data": attachment['data']}
+                        yield {"filename": part["filename"], "mimeType": part["mimeType"], "data": attachment['data']}
 
         print(
             f"Searching for messages with subject: '{subject_to_detect}' and extracting excel attachments")
@@ -99,16 +99,16 @@ def main():
                 if not attachments:
                     print('No attachments found.')
                     continue
-                # Itera sobre los adjuntos y los guarda en el directorio indicado si tienen extensión xlsx.
+                # Itera sobre los adjuntos y los guarda en el directorio indicado si son de tipo excel.
                 for attachment in attachments:
-                    if attachment['filename'].endswith('.xlsx'):
-                        print(f"Found attachment: {attachment['filename']}")
+                    if attachment['mimeType'] == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+                        print(f"Found attachment: name: {attachment['filename']}, mimeType: {attachment['mimeType']}")
                         path = os.path.join(store_dir, attachment['filename'])
                         with open(path, 'wb') as f:
                             f.write(base64.urlsafe_b64decode(
                                 attachment['data']))  # La data del adjunto se descarga en formato base64url, por lo que hay que decodificarla.
                     else:
-                        print(f"Skipping attachment: {attachment['filename']}")
+                        print(f"Skipping attachment: {attachment['filename']} of type: {attachment['mimeType']}")
                 print(f"{'-'*20}")
 
     except HttpError as error:
